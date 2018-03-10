@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -32,6 +33,12 @@ namespace TaskManager
             services
                 .AddMvc()
                 .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+
+            //Create contex with Mysql provider
+            services.AddDbContext<Data.TaskDbContex>(options =>
+            {
+                options.UseMySql(Configuration.GetConnectionString("LocalTasks"));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
