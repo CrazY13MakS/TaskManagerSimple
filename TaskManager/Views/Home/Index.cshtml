@@ -2,7 +2,7 @@
 
 <h2>Home</h2>
 
-@(Html.DevExtreme().DataGrid<Order>()
+@*@(Html.DevExtreme().DataGrid<Order>()
     .ShowBorders(true)
     .DataSource(d => d.Mvc().Controller("Orders").LoadAction("Get").Key("OrderID"))
     .Columns(columns => {
@@ -26,4 +26,4 @@
             groupItems.Add().SummaryType(SummaryType.Count);
         })
     )
-)
+)*@
