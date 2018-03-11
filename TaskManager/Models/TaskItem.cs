@@ -21,9 +21,10 @@ namespace TaskManager.Models
         [DataType(DataType.DateTime)]
         public DateTime? DateEnd { get; set; }
         [Required]
-        public String Title { get; set; }
+        public String Title { get; set; }     
         [Required]
         public String Description { get; set; }
+        [Required]
         public int TaskStatusId { get; set; }
         public int? UserId { get; set; }
         [NotMapped]
@@ -31,11 +32,19 @@ namespace TaskManager.Models
         public User User { get; set; }
         [NotMapped]
         public bool HasSubTask { get; set; }
+        [NotMapped]
         public TaskStatus TaskStatus { get; set; }
+        [NotMapped]
         public List<TaskItem> Tasks { get; set; }
+     //   public TaskItem ParentTask { get; set; }
 
+        public int? ParentTaskId { get; set; }
         public bool CanComplitedTask()
         {
+            if(Tasks==null)
+            {
+                return true;
+            }
             return Tasks.Any(x => !x.CanComplitedTask());
         }
     }

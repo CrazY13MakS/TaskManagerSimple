@@ -6,50 +6,53 @@
 
 <h2>Tasks</h2>
 @(Html.DevExtreme().TreeList<TaskItem>()
-         .ID("taskTree")
-         .DataSource(ds => ds.Mvc()
-         .Controller("Tasks")
-         .LoadAction("Get")
-         .InsertAction("InsertTask")
-         .Key("Id")
-         )
-         .KeyExpr("Id")
-         .ParentIdExpr("ParentTask")
-         .ShowRowLines(true)
-         .Editing(e => e
-                       .Mode(GridEditMode.Popup)
-                       .AllowUpdating(true)
-                       .AllowDeleting(true)
-                       .AllowAdding(true)
-                       .Popup(p => p
-                           .Title("Create new Task")
-                               .ShowTitle(true)
-                               .Width(700)
-                               .Height(295)
-                               .Position(pos => pos
-                                   .My(HorizontalAlignment.Center, VerticalAlignment.Top)
-                                   .At(HorizontalAlignment.Center, VerticalAlignment.Top)
-                                   .Of(new JS("window"))
+                 .ID("taskTree")
+                 .DataSource(ds => ds.Mvc()
+                 .Controller("Tasks")
+                 .LoadAction("Get")
+                 .InsertAction("InsertTask")
+                 .UpdateAction("UpdateTask")
+                 .Key("Id")
+                 )
+                 .KeyExpr("Id")
+                 .ParentIdExpr("ParentTaskId")
+                 .ShowRowLines(true)
+                 .Editing(e => e
+                               .Mode(GridEditMode.Popup)
+                               .AllowUpdating(true)
+                               .AllowDeleting(true)
+                               .AllowAdding(true)
+                               .Popup(p => p
+                                   .Title("Task info")
+                                       .ShowTitle(true)
+                                       .Width(700)
+                                       .Height(295)
+                                       .Position(pos => pos
+                                           .My(HorizontalAlignment.Center, VerticalAlignment.Top)
+                                           .At(HorizontalAlignment.Center, VerticalAlignment.Top)
+                                           .Of(new JS("window"))
+                                       )
+                                   )
                                )
-                           )
-                       )
-         .ColumnAutoWidth(true)
-         .Columns(col =>
-         {
-             col.AddFor(x => x.Title);
-             col.AddFor(x => x.Description).MinWidth(250);
-             col.AddFor(x => x.User)
-                                      .Lookup(lookup => lookup
-                                      .DataSource(ds => ds.Mvc().Controller("Users").LoadAction("Get").Key("Id"))
-                                      .ValueExpr("Id").DisplayExpr("FullName"));
-             col.AddFor(x => x.DateStart).DataType(GridColumnDataType.DateTime);
-             col.AddFor(x => x.DateEnd).DataType(GridColumnDataType.DateTime);
-             col.AddFor(x => x.TaskStatus)
-                                          .Lookup(lookup => lookup
-                                          .DataSource(ds => ds.Mvc().Controller("Tasks").LoadAction("GetStatuses").Key("Id"))
-                                          .ValueExpr("Id").DisplayExpr("Name"));
+                 .ColumnAutoWidth(true)
+                 .Columns(col =>
+                 {
+                     col.AddFor(x => x.Title);
+                     col.AddFor(x => x.Description).MinWidth(250);
+                     col.AddFor(x => x.UserId)
+                                              .Lookup(lookup => lookup
+                                              .DataSource(ds => ds.Mvc().Controller("Users").LoadAction("Get").Key("Id"))
+                                              .ValueExpr("Id").DisplayExpr("FullName"));
+                     col.AddFor(x => x.DateStart).DataType(GridColumnDataType.DateTime);
+                     col.AddFor(x => x.DateEnd).DataType(GridColumnDataType.DateTime);
+                     col.AddFor(x => x.TaskStatusId)
+                                                  .Lookup(lookup => lookup
+                                                  .DataSource(ds => ds.Mvc().Controller("Tasks").LoadAction("GetStatuses").Key("Id"))
+                                                  .ValueExpr("Id").DisplayExpr("Name"));
 
-         })
+                 })
+                 .OnRowValidating("treeList_onCellPrepared")
+                 .OnEditorPreparing("treeList_onCellPrepared")
 )
 
 @(Html.DevExtreme().DataGrid()
@@ -70,7 +73,10 @@
         }
         return "Not Set";
     }
-
+    function treeList_onCellPrepared(e) {
+       
+        console.log(e);
+    }
 
     function Task_Status_Cust(e) {
         if (e.value !== undefined) {

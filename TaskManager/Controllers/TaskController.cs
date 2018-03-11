@@ -62,19 +62,21 @@ namespace TaskManager.Controllers
         }
 
         [HttpPut]
-        public IActionResult UpdateTask(string values)
+        public IActionResult UpdateTask(int key, string values)
         {
-            var task = new TaskItem();
+            TaskItem task = manager.GetTaskItem(key);
+            int prevStatusId = task.TaskStatusId;
             JsonConvert.PopulateObject(values, task);
-
             if (!TryValidateModel(task))
                 return BadRequest(ModelState.GetFullErrorMessage());
-
-            if (manager.InsertTask(task))
+            var res = manager.UpdateTask(prevStatusId,task);
+            if (res=="Ok")
             {
                 return Ok();
             }
-            return BadRequest("Unknown error");
+            if (!TryValidateModel(task))
+                return BadRequest(ModelState.GetFullErrorMessage());
+            return BadRequest(res);
         }
 
 

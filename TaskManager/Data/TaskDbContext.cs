@@ -35,15 +35,16 @@ namespace TaskManager.Data
                 entity.HasOne(d => d.User).WithMany(x => x.Tasks);
                 entity.Property(x => x.Description).IsRequired();
                 entity.HasOne(x => x.TaskStatus).WithMany(x => x.Tasks).IsRequired();
-               // entity.HasOne(x => x.ParentTask).WithOne(x => x);
+              //  entity.HasOne(x => x.ParentTask).WithMany(x =>x.Tasks).HasForeignKey(x=>x.ParentTaskId).IsRequired(false);
             });
             modelBuilder.Entity<Models.TaskStatus>(entity=>
                 {
                     entity.HasKey(x => x.Id);
                     entity.Property(x => x.Name).IsRequired();
                     entity.HasMany(x => x.Tasks).WithOne(x => x.TaskStatus);
-                }                );
+                });
         }
+       
         public DbSet<User> User { get; set; }
         public DbSet<Models.TaskItem> Task { get; set; }
         public DbSet<Models.TaskStatus> TaskStatus { get; set; }

@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TaskManager.Models;
-
+using Microsoft.EntityFrameworkCore.Migrations;
 namespace TaskManager.Data
 {
     public class TaskManager
@@ -13,6 +14,11 @@ namespace TaskManager.Data
         {
             this.dbContex = dbContex;
             dbContex.Database.EnsureCreated();
+        }
+        public TaskItem GetTaskItem(int id)
+        {
+
+            return dbContex.Task.FirstOrDefault(x => x.Id == id);
         }
         public List<TaskItem> GetTasks()
         {
@@ -29,30 +35,46 @@ namespace TaskManager.Data
         }
         public bool InsertTask(TaskItem task)
         {
-            
+            if (task.ParentTaskId == 0)
+            {
+                task.ParentTaskId = null;
+            }
             dbContex.Task.Add(task);
-            return dbContex.SaveChanges() == 1;
+            var res = dbContex.SaveChanges() == 1;
+            return res;
         }
-        public String UpdateTask(TaskItem taskUpdate)
+        public String UpdateTask(int prevStatus,TaskItem task)
         {
-            var task = dbContex.Task.FirstOrDefault(x => x.Id == taskUpdate.Id);
-            if (task == null)
+            TaskItem taskUpdate = dbContex.Task.FirstOrDefault(x => x.Id == task.Id);
+            if (taskUpdate == null)
             {
                 return "Task for update not found in DB";
             }
-            if (taskUpdate.TaskStatus.Name=="Complited"&&!task.CanComplitedTask())
+            var status = dbContex.TaskStatus.FirstOrDefault(x => x.Name == "Completed");
+            int statusComplId = status == null ? 3 : status.Id;
+            if (task.TaskStatusId==statusComplId&& !CanSetComplited(taskUpdate,statusComplId))
             {
                 return "Not all sub-tasks are completed";
             }
-            task.DateEnd = taskUpdate.DateEnd;
-            task.DateStart = taskUpdate.DateStart;
-            task.Description = taskUpdate.Description;
-            task.Title = taskUpdate.Title;
-            task.TaskStatus = taskUpdate.TaskStatus;
-
+            if(prevStatus==statusComplId&&task.TaskStatusId!=prevStatus&& CanSetNotComplited(task, statusComplId))
+            {
+                return "Parent task is already completed. Edit them first";
+            }
             return dbContex.SaveChanges() == 1 ? "Ok" : "Unknown Error";
-           
+
         }
+        private bool CanSetNotComplited(TaskItem task, int statusId)
+        {
+            var taskItem = dbContex.Task.FirstOrDefault(x => x.Id == task.Id);
+            return task == null || task.TaskStatusId != statusId;
+        }
+        private bool CanSetComplited(TaskItem task, int statusId)
+        {            
+            List<TaskItem> tasks = GetSubTaskItems(task.Id);
+            var res = tasks.All(x => x.TaskStatusId == statusId);
+            return res;
+        }
+
 
 
         public List<Models.TaskStatus> GetTaskStatuses()
@@ -60,12 +82,38 @@ namespace TaskManager.Data
             return dbContex.TaskStatus.ToList();
         }
 
+        private List<TaskItem> GetSubTaskItems(int taskId)
+        {
+            var items = dbContex.Task.Where(x => x.ParentTaskId == taskId).ToList();
+            List<TaskItem> temp = new List<TaskItem>(items);
+            foreach (var item in items)
+            {
+                temp.AddRange(GetSubTaskItems(item.Id));
+            }
+            return temp;
+        }
 
+        private List<TaskItem> GetParentItems(int parentTaskId)
+        {
+            List<TaskItem> temp = new List<TaskItem>();            
+            do
+            {
+                var task = dbContex.Task.FirstOrDefault(x => x.Id == parentTaskId);
+                if(task!=null)
+                {
+                    temp.Add(task);
+                }
+                else
+                {
+                    return temp;
+                }
+            } while (true);       
+        }
 
         public List<User> GetUsers()
         {
             var list = dbContex.User.ToList();
-            list.ForEach(x=>x.FullName=$"{x.FirstName} {x.LastName}");
+            list.ForEach(x => x.FullName = $"{x.FirstName} {x.LastName}");
             return list;
         }
         //public bool StartTaskExecution(int taskId)
