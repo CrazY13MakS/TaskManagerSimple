@@ -25,27 +25,26 @@ namespace TaskManager.Models
         [Required]
         public String Description { get; set; }
         [Required]
+        [Display(Name ="Status")]
         public int TaskStatusId { get; set; }
+        [Display(Name ="User")]
         public int? UserId { get; set; }
+        public int? ParentTaskId { get; set; }
+        public User User { get; set; }
+
         [NotMapped]
         public bool CanComplited { get; set; }
-        public User User { get; set; }
-        [NotMapped]
-        public bool HasSubTask { get; set; }
-        [NotMapped]
-        public TaskStatus TaskStatus { get; set; }
-        [NotMapped]
-        public List<TaskItem> Tasks { get; set; }
+      //  [NotMapped]
+      //  public List<TaskItem> Tasks { get; set; }
      //   public TaskItem ParentTask { get; set; }
 
-        public int? ParentTaskId { get; set; }
-        public bool CanComplitedTask()
-        {
-            if(Tasks==null)
-            {
-                return true;
-            }
-            return Tasks.Any(x => !x.CanComplitedTask());
-        }
+        //public bool CanComplitedTask()
+        //{
+        //    if(Tasks==null)
+        //    {
+        //        return true;
+        //    }
+        //    return Tasks.Any(x => !x.CanComplitedTask());
+        //}
     }
 }

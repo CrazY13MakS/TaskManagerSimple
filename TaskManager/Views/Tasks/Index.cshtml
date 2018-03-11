@@ -5,114 +5,63 @@
 
 
 <h2>Tasks</h2>
-@(Html.DevExtreme().TreeList<TaskItem>()
-                 .ID("taskTree")
-                 .DataSource(ds => ds.Mvc()
-                 .Controller("Tasks")
-                 .LoadAction("Get")
-                 .InsertAction("InsertTask")
-                 .UpdateAction("UpdateTask")
-                 .Key("Id")
-                 )
-                 .KeyExpr("Id")
-                 .ParentIdExpr("ParentTaskId")
-                 .ShowRowLines(true)
-                 .Editing(e => e
-                               .Mode(GridEditMode.Popup)
-                               .AllowUpdating(true)
-                               .AllowDeleting(true)
-                               .AllowAdding(true)
-                               .Popup(p => p
-                                   .Title("Task info")
-                                       .ShowTitle(true)
-                                       .Width(700)
-                                       .Height(295)
-                                       .Position(pos => pos
-                                           .My(HorizontalAlignment.Center, VerticalAlignment.Top)
-                                           .At(HorizontalAlignment.Center, VerticalAlignment.Top)
-                                           .Of(new JS("window"))
-                                       )
-                                   )
-                               )
-                 .ColumnAutoWidth(true)
-                 .Columns(col =>
-                 {
-                     col.AddFor(x => x.Title);
-                     col.AddFor(x => x.Description).MinWidth(250);
-                     col.AddFor(x => x.UserId)
-                                              .Lookup(lookup => lookup
-                                              .DataSource(ds => ds.Mvc().Controller("Users").LoadAction("Get").Key("Id"))
-                                              .ValueExpr("Id").DisplayExpr("FullName"));
-                     col.AddFor(x => x.DateStart).DataType(GridColumnDataType.DateTime);
-                     col.AddFor(x => x.DateEnd).DataType(GridColumnDataType.DateTime);
-                     col.AddFor(x => x.TaskStatusId)
-                                                  .Lookup(lookup => lookup
-                                                  .DataSource(ds => ds.Mvc().Controller("Tasks").LoadAction("GetStatuses").Key("Id"))
-                                                  .ValueExpr("Id").DisplayExpr("Name"));
 
-                 })
-                 .OnRowValidating("treeList_onCellPrepared")
+
+
+<div class="container" >
+    @(Html.DevExtreme().TreeList<TaskItem>()
+                                     .ID("taskTree")
+                                     .DataSource(ds => ds.Mvc()
+                                     .Controller("Tasks")
+                                     .LoadAction("Get")
+                                     .InsertAction("InsertTask")
+                                     .UpdateAction("UpdateTask")
+                                     .DeleteAction("DeleteTask")
+                                     .Key("Id")
+                                     )
+                                     .KeyExpr("Id")
+                                     .ParentIdExpr("ParentTaskId")
+                                     .ShowRowLines(true)
+                                     .Editing(e => e
+                                                   .Mode(GridEditMode.Popup)
+                                                   .AllowUpdating(true)
+                                                   .AllowDeleting(true)
+                                                   .AllowAdding(true)
+                                                   .Popup(p => p
+                                                       .Title("Task info")
+                                                           .ShowTitle(true)
+                                                           .Width(700)
+                                                           .Height(340)
+                                                           .Position(pos => pos
+                                                               .My(HorizontalAlignment.Center, VerticalAlignment.Top)
+                                                               .At(HorizontalAlignment.Center, VerticalAlignment.Top)
+                                                               .Of(new JS("window"))
+                                                           )
+                                                       )
+                                                   )
+                                     .ColumnAutoWidth(true)
+                                     .Columns(col =>
+                                     {
+                                         col.AddFor(x => x.Title);
+                                         col.AddFor(x => x.Description).MinWidth(250);
+                                         col.AddFor(x => x.UserId)
+                                                                  .Lookup(lookup => lookup
+                                                                  .DataSource(ds => ds.Mvc().Controller("Users").LoadAction("Get").Key("Id"))
+                                                                  .ValueExpr("Id").DisplayExpr("FullName"));
+                                         col.AddFor(x => x.DateStart).DataType(GridColumnDataType.DateTime);
+                                         col.AddFor(x => x.DateEnd).DataType(GridColumnDataType.DateTime);
+                                         col.AddFor(x => x.TaskStatusId)
+                                                                      .Lookup(lookup => lookup
+                                                                      .DataSource(ds => ds.Mvc().Controller("Tasks").LoadAction("GetStatuses").Key("Id"))
+                                                                      .ValueExpr("Id").DisplayExpr("Name"));
+
+                                     }).OnRowValidating("treeList_onCellPrepared")
                  .OnEditorPreparing("treeList_onCellPrepared")
-)
-
-@(Html.DevExtreme().DataGrid()
-        .ID("gridContainer")
-        .DataSource(ds => ds.Mvc().Controller("Users").LoadAction("Get").Key("Id"))
-        .Columns(c =>
-        {
-            c.Add().DataField("Id");
-            c.Add().DataField("FirstName");
-            c.Add().DataField("LastName");
-        })
-)
-
+    )
+</div>
 <script>
-    function Task_User_Form(e) {
-        if (e.value != undefined && e.value.FirstName !== undefined && e.value.SecondName !== undefined) {
-            return e.value.FirstName + " " + e.value.SecondName;
-        }
-        return "Not Set";
-    }
     function treeList_onCellPrepared(e) {
-       
-        console.log(e);
-    }
 
-    function Task_Status_Cust(e) {
-        if (e.value !== undefined) {
-            return e.value.Name;
-
-        }
-        return "status not set";
-
-    }
-
-
-    function Task_Status(e) {
-        if (e.value !== undefined) {
-            var text = "Not Started";
-            if (e.value.Complited != undefined && e.value.Complited === true) {
-                text = "Complited";
-            }
-            else if (e.value.InProgress != undefined && e.value.InProgress === true) {
-                text = "InProgress";
-            }
-            return text;
-        }
-        return "Not Started";
-    }
-    function Task_Actions_Button(e) {
-        if (e !== undefined) {
-            return '<div class="dx-button dx-button-normal dx-widget dx-button-has-icon dx-button-has-text" role="button" aria-label="Start" taskid="' + e.Id +
-                +'" tabindex="0"><div class="dx - button - content" OnClick>' +
-                '<i class="dx-icon glyphicon glyphicon-play"></i><span class="dx-button-text">Start</span></div></div>'
-        }
-        return "Actions not available";
-
-    }
-    function Click_Task_Start(e) {
-        var id = $(this).data('taskId');
-        DevExpress.ui.notify("The " + id + " button was clicked");
 
     }
 </script>

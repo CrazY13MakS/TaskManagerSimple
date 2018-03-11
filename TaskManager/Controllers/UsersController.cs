@@ -6,7 +6,10 @@ using DevExtreme.AspNet.Data;
 using DevExtreme.AspNet.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using TaskManager.Data;
+using TaskManager.Data.Extensions;
+using TaskManager.Models;
 
 namespace TaskManager.Controllers
 {
@@ -27,83 +30,54 @@ namespace TaskManager.Controllers
             return View();
         }
         [HttpGet]
-        public object Get(DataSourceLoadOptions loadOptions)
+        public object GetUsers(DataSourceLoadOptions loadOptions)
         {
             return DataSourceLoader.Load(manager.GetUsers(), loadOptions);
         }
-        // GET: Users/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
 
-        // GET: Users/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Users/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public IActionResult InsertUser(string values)
         {
-            try
-            {
-                // TODO: Add insert logic here
+            var user = new User();
+            JsonConvert.PopulateObject(values, user);
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch
+            if (!TryValidateModel(user))
+                return BadRequest(ModelState.GetFullErrorMessage());
+
+            String res = manager.InsertUser(user);
+            if (res=="Ok")
             {
-                return View();
+                return Ok();
             }
+            return BadRequest(res);
         }
 
-        // GET: Users/Edit/5
-        public ActionResult Edit(int id)
+        [HttpPut]
+        public IActionResult UpdateUser(int key, string values)
         {
-            return View();
+            User user = manager.GetUser(key);
+            JsonConvert.PopulateObject(values, user);
+            if (!TryValidateModel(user))
+                return BadRequest(ModelState.GetFullErrorMessage());
+            var res = manager.UpdateUser(user);
+            if (res == "Ok")
+            {
+                return Ok();
+            }
+            return BadRequest(res);
         }
 
-        // POST: Users/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+
+
+        [HttpDelete]
+        public IActionResult DeleteTask(int key)
         {
-            try
+            var res = manager.DeleteUser(key);
+            if (res=="Ok")
             {
-                // TODO: Add update logic here
-
-                return RedirectToAction(nameof(Index));
+                return Ok();
             }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Users/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Users/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            return BadRequest(res);
         }
     }
 }

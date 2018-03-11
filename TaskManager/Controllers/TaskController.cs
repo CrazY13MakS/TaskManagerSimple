@@ -74,89 +74,21 @@ namespace TaskManager.Controllers
             {
                 return Ok();
             }
-            if (!TryValidateModel(task))
-                return BadRequest(ModelState.GetFullErrorMessage());
             return BadRequest(res);
         }
 
+        
 
-
-
-
-
-        // GET: Tasks/Details/5
-        public ActionResult Details(int id)
+        [HttpDelete]
+        public IActionResult DeleteTask(int key)
         {
-            return View();
-        }
-
-        // GET: Tasks/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Tasks/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
+            
+            if (manager.DeleteTask(key))
             {
-                // TODO: Add insert logic here
-
-                return RedirectToAction(nameof(Index));
+                return Ok();
             }
-            catch
-            {
-                return View();
-            }
+            return BadRequest("Unknown error");
         }
-
-        // GET: Tasks/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: Tasks/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Tasks/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Tasks/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+               
     }
 }
