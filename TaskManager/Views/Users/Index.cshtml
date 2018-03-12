@@ -2,36 +2,37 @@
 @{
     ViewData["Title"] = "Users";
 }
-
+<h2 class="text-center">Users</h2>
+<br />
 <div class="dx-black-background">
     @(Html.DevExtreme().DataGrid()
-                    .ID("UsersContainer")
-                    .DataSource(ds => ds.Mvc()
-                                    .Controller("Users")
-                                    .LoadAction("GetUsers")
-                                    .UpdateAction("UpdateUser")
-                                    .InsertAction("InsertUser")
-                                    .Key("Id"))
-                   .Editing(e => e.Mode(GridEditMode.Popup)
-                   .AllowUpdating(true)
-                   .AllowAdding(true)
-                   .AllowDeleting(true)
-                   .Popup(p => p
-                        .Title("User Info")
-                        
-                        .ShowTitle(true)
-                        .Width(700)
-                        .Height(345)
-                        .Position(pos => pos
-                            .My(HorizontalAlignment.Center, VerticalAlignment.Top)
-                            .At(HorizontalAlignment.Center, VerticalAlignment.Top)
-                            .Of(new JS("window"))
-                        )))
-                    
-                  .Columns(c =>
-                  {
-                      c.Add().DataField("FirstName");
-                      c.Add().DataField("LastName");
-                  })
+                            .ID("UsersContainer")
+                            .DataSource(ds => ds.Mvc()
+                                            .Controller("Users")
+                                            .LoadAction("GetUsers")
+                                            .UpdateAction("UpdateUser")
+                                            .InsertAction("InsertUser")
+                                            .Key("Id"))
+                           .Editing(e => e.Mode(GridEditMode.Popup)
+                           .AllowUpdating(true)
+                           .AllowAdding(true)
+                           .AllowDeleting(true)
+                           .Popup(p => p
+                                .Title("User Info")
+
+                                .ShowTitle(true)
+                                .Width(700)
+                                .Height(345)
+                                .Position(pos => pos
+                                    .My(HorizontalAlignment.Center, VerticalAlignment.Top)
+                                    .At(HorizontalAlignment.Center, VerticalAlignment.Top)
+                                    .Of(new JS("window"))
+                                )))
+
+                          .Columns(c =>
+                          {
+                              c.Add().DataField("FirstName");
+                              c.Add().DataField("LastName");
+                          })
     )
 </div>
