@@ -43,11 +43,11 @@
                                      .Columns(col =>
                                      {
                                          col.AddFor(x => x.Title);
-                                         col.AddFor(x => x.Description).MinWidth(250);
+                                        col.AddFor(x => x.Description).MinWidth(250);
                                          col.AddFor(x => x.UserId)
-                                                                  .Lookup(lookup => lookup
-                                                                  .DataSource(ds => ds.Mvc().Controller("Users").LoadAction("Get").Key("Id"))
-                                                                  .ValueExpr("Id").DisplayExpr("FullName"));
+                                                                .Lookup(lookup => lookup
+                                                                .DataSource(ds => ds.Mvc().Controller("Users").LoadAction("GetUsers").Key("Id"))
+                                                                .ValueExpr("Id").DisplayExpr("FullName").AllowClearing(true));
                                          col.AddFor(x => x.DateStart).DataType(GridColumnDataType.DateTime);
                                          col.AddFor(x => x.DateEnd).DataType(GridColumnDataType.DateTime);
                                          col.AddFor(x => x.TaskStatusId)
@@ -55,8 +55,7 @@
                                                                       .DataSource(ds => ds.Mvc().Controller("Tasks").LoadAction("GetStatuses").Key("Id"))
                                                                       .ValueExpr("Id").DisplayExpr("Name"));
 
-                                     }).OnRowValidating("treeList_onCellPrepared")
-                 .OnEditorPreparing("treeList_onCellPrepared")
+                                     })
     )
 </div>
 <script>
